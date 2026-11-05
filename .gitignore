@@ -18,6 +18,10 @@ build/
 .wwebjs_cache/
 whatsapp-session/
 data/whatsapp/
+# O worker roda de dentro de apps/worker, entao a sessao real mora em
+# apps/worker/data/whatsapp — que a linha acima (presa a raiz) nao pega.
+**/data/whatsapp/
+**/data/whatsapp-*/
 
 # Uploads de importacao (CSV/XLSX com dados de leads)
 uploads/
