@@ -15,6 +15,40 @@ Branch de trabalho: `claude/fase-4-campanhas`.
 
 ---
 
+## ESTE repositório: `prospector-brasil`
+
+Repositório separado, criado a partir de `agente-prospec-o-1.0`
+(branch `claude/fase-4-campanhas`, histórico inteiro). Roda **ao mesmo
+tempo** que a original, na mesma máquina. Diferenças em relação à
+original — e só estas:
+
+| | Original | Brasil (esta) |
+|---|---|---|
+| Cor da marca | azul-marinho `#1f2b4d` | azul `#1d4ed8` |
+| API | 3333 | 3334 |
+| Tela | 5173 | 5174 |
+| Redis | banco 0 | banco 1 |
+| Postgres | `prospector` | `prospector_brasil` |
+| Sessão do WhatsApp | pasta da original | `apps/worker/data/whatsapp` desta pasta |
+
+A paleta mora só em `apps/web/src/index.css` (tokens). As portas, o
+banco e a sessão vêm do `.env`, criado por:
+
+```
+pnpm install
+pnpm nova-copia brasil --nesta-pasta
+```
+
+que é o mesmo `pnpm nova-copia` de sempre, configurando a pasta atual
+em vez de clonar outra. Ele herda senha do banco, chave do Gemini e
+limites do `.env` de `..\prospector` (ou `--de <pasta>`), e recusa um
+`.env` copiado na mão da original.
+
+**O defeito do WhatsApp descrito abaixo vem junto.** Copiar não
+resolve nada dele.
+
+---
+
 ## O problema que NÃO está resolvido
 
 **O WhatsApp não fica conectado.** É o único bloqueio real hoje; o
