@@ -7,6 +7,11 @@
  * discretas, sombra minima. Cor forte so em ESTADO — temperatura, alerta,
  * sucesso. Nada de gradiente decorativo nem cor por enfeite: num CRM que
  * vai ficar aberto o dia inteiro, cor precisa significar alguma coisa.
+ *
+ * Marca AZUL (copia Brasil). O numero nos comentarios e o contraste
+ * WCAG do par em que a cor e usada; 4.5 e o minimo para texto comum.
+ * Texto branco aparece em cima de `marca` ate em 10px (badges), por isso
+ * a marca nao pode clarear mais do que isto sem perder leitura.
  */
 @theme {
   --color-fundo: #f6f7f9;
@@ -18,24 +23,30 @@
   --color-texto-suave: #5b6472;
   --color-texto-fraco: #8b94a3;
 
-  --color-marca: #1f2b4d;
-  --color-marca-clara: #2f4278;
+  /* Branco sobre marca: 6.70. Marca-clara e o hover do botao, o foco e
+     a cor dos links: branco sobre ela 5.17, ela sobre o fundo 4.82. */
+  --color-marca: #1d4ed8;
+  --color-marca-clara: #2563eb;
 
-  /* Temperatura — a escala visual central do sistema */
-  --color-frio: #5b7aa8;
-  --color-frio-bg: #eef3f9;
-  --color-morno: #b8860b;
+  /* Temperatura — a escala visual central do sistema.
+     Frio puxa para o azul-celeste: um azul igual ao da marca faria
+     "lead frio" parecer botao. Cada cor sobre o proprio fundo:
+     frio 5.47, morno 4.86, quente 4.65. */
+  --color-frio: #0369a1;
+  --color-frio-bg: #eef7fc;
+  --color-morno: #946200;
   --color-morno-bg: #fdf6e3;
-  --color-quente: #d1451b;
+  --color-quente: #c43d14;
   --color-quente-bg: #fdefe9;
 
-  /* Estados */
+  /* Estados. Info acompanha a marca, como antes. Sobre o proprio
+     fundo: sucesso 4.51, alerta 5.75, info 6.16. */
   --color-sucesso: #1a7f4f;
   --color-sucesso-bg: #eaf6ef;
   --color-alerta: #b42318;
   --color-alerta-bg: #fdeceb;
-  --color-info: #2f4278;
-  --color-info-bg: #eef1f8;
+  --color-info: #1d4ed8;
+  --color-info-bg: #eff6ff;
 }
 
 @layer base {
