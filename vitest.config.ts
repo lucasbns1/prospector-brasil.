@@ -19,6 +19,10 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    // Os testes de API verificam o login de verdade (401 sem cookie).
+    // A copia roda com ele desligado; quem testa o desligado e
+    // tests/login-desligado.test.ts, que passa o valor explicito.
+    env: { LOGIN_OBRIGATORIO: 'true' },
     include: ['tests/**/*.test.ts', 'packages/**/*.test.ts', 'apps/**/*.test.ts'],
     exclude: ['**/node_modules/**', '**/dist/**', 'tests/e2e/**'],
     // Os testes de API compartilham um unico banco. Rodar arquivos em

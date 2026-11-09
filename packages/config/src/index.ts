@@ -35,6 +35,21 @@ const envSchema = z.object({
     ),
   SESSION_TTL_DAYS: z.coerce.number().int().min(1).default(30),
 
+  /**
+   * Pedir e-mail e senha para abrir a ferramenta.
+   *
+   * Desligado por padrao NESTA copia, a pedido do dono: o sistema e
+   * monousuario e a API so escuta na propria maquina. Desligado, quem
+   * chega sem cookie entra como o (unico) usuario cadastrado.
+   *
+   * A API religa sozinha se API_HOST nao for local: abrir a porta para
+   * a rede E tirar a senha ao mesmo tempo nunca e o que se quer.
+   */
+  LOGIN_OBRIGATORIO: z
+    .string()
+    .default('false')
+    .transform((v) => v.trim().toLowerCase() === 'true'),
+
   WEB_ORIGIN: z.string().default('http://localhost:5173'),
 
   /**

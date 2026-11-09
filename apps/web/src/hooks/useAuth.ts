@@ -10,7 +10,9 @@ export interface Usuario {
 export function useUsuario() {
   return useQuery({
     queryKey: ['usuario'],
-    queryFn: () => get<{ usuario: Usuario }>('/api/auth/me'),
+    // `loginObrigatorio: false` = a API entra sozinha com o usuario unico,
+    // e a tela de login nunca aparece.
+    queryFn: () => get<{ usuario: Usuario; loginObrigatorio?: boolean }>('/api/auth/me'),
     // 401 e uma resposta esperada (nao logado), nao um erro de rede:
     // repetir a chamada so atrasaria o redirecionamento para o login.
     retry: false,

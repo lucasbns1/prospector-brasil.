@@ -31,8 +31,10 @@ function Carregando() {
 
 function AppAutenticado({
   usuario,
+  podeSair,
 }: {
   usuario: { id: string; email: string; nome: string };
+  podeSair: boolean;
 }) {
   // Uma unica conexao SSE para o app inteiro.
   const { status: statusSSE } = useEvents(true);
@@ -42,7 +44,7 @@ function AppAutenticado({
       <div className="flex h-screen overflow-hidden">
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
-          <Topbar usuario={usuario} statusSSE={statusSSE} />
+          <Topbar usuario={usuario} statusSSE={statusSSE} podeSair={podeSair} />
           <main className="flex-1 overflow-y-auto p-5 lg:p-6">
             <div className="mx-auto max-w-[1400px]">
               <Routes>
@@ -87,5 +89,9 @@ export function App() {
   if (isLoading) return <Carregando />;
   if (!data?.usuario) return <Login />;
 
-  return <AppAutenticado usuario={data.usuario} />;
+  // Sem login, "Sair" nao leva a lugar nenhum: a API entraria de novo
+  // no mesmo instante. O botao so aparece quando o login existe.
+  return (
+    <AppAutenticado usuario={data.usuario} podeSair={data.loginObrigatorio !== false} />
+  );
 }

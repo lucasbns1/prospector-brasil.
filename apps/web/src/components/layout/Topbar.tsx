@@ -263,9 +263,11 @@ function SinoNotificacoes() {
 export function Topbar({
   usuario,
   statusSSE,
+  podeSair = true,
 }: {
   usuario: Usuario;
   statusSSE: StatusConexaoSSE;
+  podeSair?: boolean;
 }) {
   const logout = useLogout();
 
@@ -317,15 +319,17 @@ export function Topbar({
           </span>
         </div>
 
-        <Button
-          variant="fantasma"
-          size="icone"
-          aria-label="Sair"
-          onClick={() => logout.mutate()}
-          disabled={logout.isPending}
-        >
-          <LogOut className="h-4 w-4" aria-hidden="true" />
-        </Button>
+        {podeSair && (
+          <Button
+            variant="fantasma"
+            size="icone"
+            aria-label="Sair"
+            onClick={() => logout.mutate()}
+            disabled={logout.isPending}
+          >
+            <LogOut className="h-4 w-4" aria-hidden="true" />
+          </Button>
+        )}
       </div>
     </header>
   );

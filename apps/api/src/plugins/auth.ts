@@ -30,6 +30,31 @@ declare module 'fastify' {
   interface FastifyRequest {
     usuario?: { id: string; email: string; nome: string };
   }
+  interface FastifyInstance {
+    /** false = sem tela de login. Ver `registrarAuth`. */
+    loginObrigatorio: boolean;
+  }
+}
+
+/** So estes enderecos ficam fora do alcance de outra maquina. */
+function hostSoLocal(host: string): boolean {
+  return ['127.0.0.1', 'localhost', '::1'].includes(host.trim().toLowerCase());
+}
+
+/**
+ * O usuario de quando nao ha login: o primeiro ativo. O sistema e
+ * monousuario — o seed cria exatamente um.
+ */
+async function usuarioSemLogin(): Promise<{ id: string; email: string; nome: string }> {
+  const u = await prisma.user.findFirst({
+    where: { ativo: true },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true, email: true, nome: true },
+  });
+  if (!u) {
+    throw new NaoAutenticadoError('Nenhum usuario cadastrado. Rode `pnpm db:seed`.');
+  }
+  return u;
 }
 
 function hashToken(token: string): string {
@@ -86,8 +111,27 @@ export async function limparSessoesExpiradas(): Promise<number> {
 /**
  * Hook de autenticacao. Use com `preHandler` nas rotas protegidas.
  * NUNCA confia em nada vindo do cliente alem do cookie assinado.
+ *
+ * Com o login desligado, um cookie valido continua valendo; sem ele
+ * (ou com ele vencido), a requisicao segue como o usuario unico. A
+ * leitura e `!== false` de proposito: uma instancia que nao passou por
+ * `registrarAuth` continua exigindo login.
  */
 export async function exigirAutenticacao(
+  request: FastifyRequest,
+  reply: FastifyReply
+): Promise<void> {
+  try {
+    await autenticarPeloCookie(request, reply);
+  } catch (err) {
+    if (request.server.loginObrigatorio !== false || !(err instanceof NaoAutenticadoError)) {
+      throw err;
+    }
+    request.usuario = await usuarioSemLogin();
+  }
+}
+
+async function autenticarPeloCookie(
   request: FastifyRequest,
   _reply: FastifyReply
 ): Promise<void> {
@@ -127,7 +171,26 @@ export function opcoesCookie(expiresAt: Date) {
   };
 }
 
-export async function registrarAuth(_app: FastifyInstance): Promise<void> {
+export async function registrarAuth(
+  _app: FastifyInstance,
+  opcoes: { loginObrigatorio: boolean; apiHost: string } = {
+    loginObrigatorio: true,
+    apiHost: '127.0.0.1',
+  }
+): Promise<void> {
+  // Sem senha so quando a API nao e alcancavel de fora desta maquina.
+  const semLogin = !opcoes.loginObrigatorio && hostSoLocal(opcoes.apiHost);
+  _app.decorate('loginObrigatorio', !semLogin);
+
+  if (semLogin) {
+    _app.log.info('Login desligado (LOGIN_OBRIGATORIO=false): a tela abre direto');
+  } else if (!opcoes.loginObrigatorio) {
+    _app.log.warn(
+      { apiHost: opcoes.apiHost },
+      'LOGIN_OBRIGATORIO=false ignorado: a API escuta fora desta maquina, entao o login continua'
+    );
+  }
+
   const removidas = await limparSessoesExpiradas();
   if (removidas > 0) {
     _app.log.info({ removidas }, 'Sessoes expiradas removidas');

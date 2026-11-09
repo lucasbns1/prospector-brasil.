@@ -66,6 +66,10 @@ export async function rotasAuth(app: FastifyInstance): Promise<void> {
   app.get(
     '/api/auth/me',
     { preHandler: exigirAutenticacao },
-    async (request) => ({ usuario: request.usuario })
+    // `loginObrigatorio` diz a tela se faz sentido mostrar o botao "Sair".
+    async (request) => ({
+      usuario: request.usuario,
+      loginObrigatorio: app.loginObrigatorio !== false,
+    })
   );
 }

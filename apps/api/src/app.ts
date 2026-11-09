@@ -60,7 +60,10 @@ export async function criarApp(envParcial?: Partial<Env>): Promise<{
   });
 
   registrarErrorHandler(app);
-  await registrarAuth(app);
+  await registrarAuth(app, {
+    loginObrigatorio: env.LOGIN_OBRIGATORIO,
+    apiHost: env.API_HOST,
+  });
 
   await app.register(rotasHealth);
   await app.register(rotasAuth);
